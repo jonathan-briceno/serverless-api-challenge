@@ -1,17 +1,59 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: jbriceno19921
-# "service" is the name of this project. This will also be added to your AWS resource names.
-service: serverless-challenge
+service: gametime-api 
 
 provider:
   name: aws
   runtime: nodejs22.x
   region: us-east-1
+  environment:
+    VIDEO_GAME_SUBMISSIONS_TABLE: ${self:service}-videogame-submissions-${sls:stage}
+  iam:
+    role:
+      name: ${self:service}-lambda-role-${sls:stage} 
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VIDEO_GAME_SUBMISSIONS_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VIDEO_GAME_SUBMISSIONS_TABLE}/index/*
 
 functions:
-  hello:
-    handler: handler.hello
+  createSubmission:
+    handler: src/createSubmission.handler
     events:
       - httpApi:
-          path: /hello-world
-          method: get
+          path: /submissions
+          method: post
+
+resources:
+  Resources:
+    SubmissionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.VIDEO_GAME_SUBMISSIONS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: submissionId
+            AttributeType: S
+          - AttributeName: gameTitle
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: submissionId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: GameIndex
+            KeySchema:
+              - AttributeName: gameTitle
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL

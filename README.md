@@ -156,3 +156,30 @@ GET /submissions?gameTitle=Hollow Knight
 - `?gameTitle=HOLLOW KNIGHT`
 
 ---
+
+### Delete Submission
+`DELETE /submissions/{id}`
+
+Delete a specific submission.
+
+**Request:**
+```bash
+DELETE /submissions/abc-123-def-456
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Submission deleted successfully",
+  "submissionId": "abc-123-def-456"
+}
+```
+
+**Error Responses:**
+- `404 Not Found` - Submission doesn't exist
+```json
+{
+  "error": "Submission not found"
+}
+```
+---

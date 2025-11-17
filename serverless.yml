@@ -41,6 +41,14 @@ functions:
           path: /submissions
           method: get
           
+  deleteSubmission:
+    handler: src/deleteSubmission.handler
+    events:
+      - httpApi:
+          path: /submissions/{id}
+          method: delete
+
+          
 resources:
   Resources:
     SubmissionsTable:

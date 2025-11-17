@@ -31,6 +31,16 @@ functions:
           path: /submissions
           method: post
 
+  querySubmissions:
+    handler: src/querySubmissions.handler
+    events:
+      - httpApi:
+          path: /submissions/{id}
+          method: get
+      - httpApi:
+          path: /submissions
+          method: get
+          
 resources:
   Resources:
     SubmissionsTable:
@@ -40,6 +50,8 @@ resources:
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: submissionId
+            AttributeType: S
+          - AttributeName: userId
             AttributeType: S
           - AttributeName: gameTitle
             AttributeType: S
@@ -52,6 +64,14 @@ resources:
           - IndexName: GameIndex
             KeySchema:
               - AttributeName: gameTitle
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserIndex
+            KeySchema:
+              - AttributeName: userId
                 KeyType: HASH
               - AttributeName: createdAt
                 KeyType: RANGE

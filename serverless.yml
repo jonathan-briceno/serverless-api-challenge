@@ -1,0 +1,17 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: jbriceno19921
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: serverless-challenge
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /hello-world
+          method: get

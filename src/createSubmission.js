@@ -3,6 +3,7 @@ const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const { randomUUID } = require('crypto');
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const { normalizeGameTitle } = require('./utils/helpers');
 
 const TABLE_NAME = process.env.VIDEO_GAME_SUBMISSIONS_TABLE;
 
@@ -37,7 +38,7 @@ async function handler(event) {
         const submission = {
             submissionId: randomUUID(),
             userId: userId,
-            gameTitle: gameTitle,
+            gameTitle: normalizeGameTitle(gameTitle),
             platform: platform,
             completionType: completionType,
             hoursPlayed: hoursPlayed,

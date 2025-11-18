@@ -48,6 +48,13 @@ functions:
           path: /submissions/{id}
           method: delete
 
+  updateSubmission:
+    handler: src/updateSubmission.handler
+    events:
+      - httpApi:
+          path: /submissions/{id}
+          method: patch
+
           
 resources:
   Resources:

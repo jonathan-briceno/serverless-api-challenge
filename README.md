@@ -183,3 +183,56 @@ DELETE /submissions/abc-123-def-456
 }
 ```
 ---
+
+### Update Submission
+`PUT /submissions/{id}`
+
+Update an existing submission. Fields that can be updated: `hoursPlayed`, `completionType`, `platform`, `difficulty`, `notes`
+
+**Request:**
+```bash
+PATCH /submissions/abc-123-def-456
+```
+
+**Request Body (all fields optional):**
+```json
+{
+  "hoursPlayed": 75,
+  "platform": "PC",
+  "completionType": "100_percent",
+  "difficulty": "hard",
+  "notes": "Beat the final boss!"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "submissionId": "abc-123-def-456",
+  "userId": "user123",
+  "gameTitle": "Hollow Knight",
+  "hoursPlayed": 75,
+  "platform": "PC",
+  "completionType": "100_percent",
+  "difficulty": "hard",
+  "notes": "Beat the final boss!",
+  "createdAt": "2025-11-16T10:30:00.000Z",
+  "updatedAt": "2025-11-17T14:22:00.000Z"
+}
+```
+
+**Error Responses:**
+- `404 Not Found` - Submission doesn't exist
+```json
+{
+  "error": "Submission to update not found"
+}
+```
+- `400 Bad Request` - Invalid data
+```json
+{
+  "error": "hoursPlayed must be greater than 0"
+}
+```
+
+---

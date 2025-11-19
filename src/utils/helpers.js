@@ -1,6 +1,6 @@
-// I need to normalize the game titles so its easier to search by game title
-function normalizeGameTitle(title) {
-    return title
+// I need to normalize the game titles and platforms so its easier to search by game title and apply validations
+function normalizeText(text) {
+    return text
         .trim()
         .toLowerCase()
         .split(' ')
@@ -8,4 +8,4 @@ function normalizeGameTitle(title) {
         .join(' ');
 }
 
-module.exports = { normalizeGameTitle };
+module.exports = { normalizeText };

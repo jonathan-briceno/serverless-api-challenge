@@ -24,7 +24,7 @@ Submit a game completion time.
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "any%",
+  "completionType": "main_plus_extras",
   "difficulty": "N/A",
   "notes": "Amazing game!"
 }
@@ -38,7 +38,7 @@ Submit a game completion time.
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "any%",
+  "completionType": "main_plus_extras",
   "difficulty": "N/A",
   "notes": "Amazing game!",
   "createdAt": "2025-11-16T10:30:00.000Z",
@@ -67,7 +67,7 @@ GET /submissions/abc-123-def-456
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "any%",
+  "completionType": "main_plus_extras",
   "difficulty": "N/A",
   "notes": "Cool!",
   "createdAt": "2025-11-16T10:30:00.000Z",
@@ -99,7 +99,7 @@ GET /submissions?userId=user123
       "gameTitle": "Hollow Knight",
       "hoursPlayed": 57,
       "platform": "Playstation 4",
-      "completionType": "any%",
+      "completionType": "main_plus_extras",
       "createdAt": "2025-11-16T12:00:00.000Z",
       "updatedAt": "2025-11-16T12:00:00.000Z"
     },
@@ -134,7 +134,7 @@ GET /submissions?gameTitle=Hollow Knight
       "gameTitle": "Hollow Knight",
       "hoursPlayed": 57,
       "platform": "Playstation 4",
-      "completionType": "any%",
+      "completionType": "main_plus_extras",
       "createdAt": "2025-11-16T12:00:00.000Z"
     },
     {

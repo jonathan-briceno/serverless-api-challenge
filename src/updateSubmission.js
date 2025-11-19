@@ -1,8 +1,9 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
-
+const { PLATFORMS, COMPLETION_TYPES } = require('./constants');
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const { normalizeText } = require('./utils/helpers');
 
 const TABLE_NAME = process.env.VIDEO_GAME_SUBMISSIONS_TABLE;
 
@@ -19,7 +20,7 @@ async function handler(event) {
         }
 
         // Fields that can be updated, pretty much all but game title 
-        const { hoursPlayed, completionType, platform, difficulty, notes } = body;
+        const { hoursPlayed, completionType, platform, notes } = body;
 
         // Validate hoursPlayed if provided
         if (hoursPlayed !== undefined && hoursPlayed <= 0) {
@@ -29,11 +30,31 @@ async function handler(event) {
             };
         }
 
+        if (!PLATFORMS.includes(platform.toLowerCase())) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    error: `Invalid platform ${platform}, current valid platforms are ${PLATFORMS
+                        .map(p => normalizeText(p))
+                        .join(', ')}`
+                })
+            };
+        }
+
+        if (!COMPLETION_TYPES.includes(completionType.toLowerCase())) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    error: `Invalid completion type ${completionType}, current valid platforms are ${COMPLETION_TYPES
+                        .join(', ')}`
+                })
+            };
+        }
+
         // Check if nothing to update (all fields are undefined)
-        if (hoursPlayed === undefined && 
-            completionType === undefined && 
-            platform === undefined && 
-            difficulty === undefined && 
+        if (hoursPlayed === undefined &&
+            completionType === undefined &&
+            platform === undefined &&
             notes === undefined) {
             return {
                 statusCode: 400,
@@ -59,14 +80,7 @@ async function handler(event) {
 
         if (completionType) {
             updateExpression += ', completionType = :completionType';
-            expressionAttributeValues[':completionType'] = completionType;
-        }
-
-        // Difficulty could be blank (which is valid and would default to N/A)
-        // so we need to evaluate it against undefined
-        if (difficulty !== undefined) {
-            updateExpression += ', difficulty = :difficulty';
-            expressionAttributeValues[':difficulty'] = difficulty || "N/A";
+            expressionAttributeValues[':completionType'] = completionType.toLowerCase();
         }
 
         if (notes !== undefined) {
@@ -94,14 +108,14 @@ async function handler(event) {
 
     } catch (error) {
         console.error('Error:', error);
-        
+
         if (error.name === 'ConditionalCheckFailedException') {
             return {
                 statusCode: 404,
                 body: JSON.stringify({ error: 'Submission to update not found' })
             };
         }
-        
+
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Internal server error' })

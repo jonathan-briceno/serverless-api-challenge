@@ -3,7 +3,8 @@ const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
 const { randomUUID } = require('crypto');
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
-const { normalizeGameTitle } = require('./utils/helpers');
+const { normalizeText } = require('./utils/helpers');
+const { PLATFORMS, COMPLETION_TYPES } = require('./constants');
 
 const TABLE_NAME = process.env.VIDEO_GAME_SUBMISSIONS_TABLE;
 
@@ -17,7 +18,6 @@ async function handler(event) {
             hoursPlayed,
             platform,
             completionType,
-            difficulty,
             notes,
         } = body;
 
@@ -35,14 +35,34 @@ async function handler(event) {
             };
         }
 
+        if (!PLATFORMS.includes(platform.toLowerCase())) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    error: `Invalid platform ${platform}, current valid platforms are ${PLATFORMS
+                        .map(p => normalizeText(p))
+                        .join(', ')}`
+                })
+            };
+        }
+
+        if (!COMPLETION_TYPES.includes(completionType.toLowerCase())) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    error: `Invalid completion type ${completionType}, current valid platforms are ${COMPLETION_TYPES
+                        .join(', ')}`
+                })
+            };
+        }
+
         const submission = {
             submissionId: randomUUID(),
             userId: userId,
-            gameTitle: normalizeGameTitle(gameTitle),
-            platform: platform,
-            completionType: completionType,
+            gameTitle: normalizeText(gameTitle),
+            platform: normalizeText(platform),
+            completionType: completionType.toLowerCase(),
             hoursPlayed: hoursPlayed,
-            difficulty: difficulty || "N/A",
             notes: notes || null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

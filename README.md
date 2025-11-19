@@ -45,6 +45,29 @@ Submit a game completion time.
   "updatedAt": "2025-11-16T10:30:00.000Z"
 }
 ```
+
+**Error Responses:**
+- `400 Bad Request` - Invalid data - invalid hours played
+```json
+{
+  "error": "hoursPlayed must be greater than 0"
+}
+```
+
+- `400 Bad Request` - Invalid data - Invalid platform 
+```json
+{
+  "error": "Invalid platform Sega Saturn, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One"
+}
+```
+
+- `400 Bad Request` - Invalid data - Invalid Completion Type
+```json
+{
+  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, 100_percent"
+}
+```
+
 ---
 ### Query Submissions
 `GET /submissions/{id}` - Get by submission ID  
@@ -228,10 +251,24 @@ PATCH /submissions/abc-123-def-456
   "error": "Submission to update not found"
 }
 ```
-- `400 Bad Request` - Invalid data
+- `400 Bad Request` - Invalid data - invalid hours played
 ```json
 {
   "error": "hoursPlayed must be greater than 0"
+}
+```
+
+- `400 Bad Request` - Invalid data - Invalid platform 
+```json
+{
+  "error": "Invalid platform Sega Saturn, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One"
+}
+```
+
+- `400 Bad Request` - Invalid data - Invalid Completion Type
+```json
+{
+  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, 100_percent"
 }
 ```
 

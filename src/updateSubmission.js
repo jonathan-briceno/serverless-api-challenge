@@ -21,7 +21,7 @@ async function handler(event) {
         // Fields that can be updated, pretty much all but game title 
         const { hoursPlayed, completionType, platform, difficulty, notes } = body;
 
-         // Validate hoursPlayed if provided
+        // Validate hoursPlayed if provided
         if (hoursPlayed !== undefined && hoursPlayed <= 0) {
             return {
                 statusCode: 400,
@@ -29,7 +29,12 @@ async function handler(event) {
             };
         }
 
-        if (!hoursPlayed && !completionType && !platform && (!difficulty !== undefined) && !notes) {
+        // Check if nothing to update (all fields are undefined)
+        if (hoursPlayed === undefined && 
+            completionType === undefined && 
+            platform === undefined && 
+            difficulty === undefined && 
+            notes === undefined) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Nothing to update' })
@@ -42,7 +47,7 @@ async function handler(event) {
             ':updatedAt': new Date().toISOString()
         };
 
-        if (hoursPlayed ) {
+        if (hoursPlayed !== undefined) {
             updateExpression += ', hoursPlayed = :hoursPlayed';
             expressionAttributeValues[':hoursPlayed'] = hoursPlayed;
         }

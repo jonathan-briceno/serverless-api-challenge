@@ -64,7 +64,7 @@ Submit a game completion time.
 - `400 Bad Request` - Invalid data - Invalid Completion Type
 ```json
 {
-  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, 100_percent"
+  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, completionist"
 }
 ```
 
@@ -132,7 +132,7 @@ GET /submissions?userId=user123
       "gameTitle": "Elden Ring",
       "hoursPlayed": 120,
       "platform": "Playstation 5",
-      "completionType": "100_percent",
+      "completionType": "completionist",
       "createdAt": "2025-11-16T10:30:00.000Z",
       "updatedAt": "2025-11-16T10:30:00.000Z"
     }
@@ -166,7 +166,7 @@ GET /submissions?gameTitle=Hollow Knight
       "gameTitle": "Donkey Kong Bananza",
       "hoursPlayed": 45,
       "platform": "Switch 2",
-      "completionType": "100_percent",
+      "completionType": "completionist",
       "createdAt": "2025-11-16T11:00:00.000Z"
     }
   ]
@@ -222,7 +222,7 @@ PATCH /submissions/abc-123-def-456
 {
   "hoursPlayed": 75,
   "platform": "PC",
-  "completionType": "100_percent",
+  "completionType": "completionist",
   "difficulty": "hard",
   "notes": "Beat the final boss!"
 }
@@ -236,7 +236,7 @@ PATCH /submissions/abc-123-def-456
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 75,
   "platform": "PC",
-  "completionType": "100_percent",
+  "completionType": "completionist",
   "difficulty": "hard",
   "notes": "Beat the final boss!",
   "createdAt": "2025-11-16T10:30:00.000Z",
@@ -268,8 +268,85 @@ PATCH /submissions/abc-123-def-456
 - `400 Bad Request` - Invalid data - Invalid Completion Type
 ```json
 {
-  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, 100_percent"
+  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, completionist"
 }
 ```
+
+---
+
+### Get Game Statistics
+`GET /games/{gameTitle}/stats`
+
+Get aggregated statistics for a specific game including averages, counts, and breakdowns by completion type and platform.
+
+**Request:**
+```bash
+GET /games/Hollow%20Knight/stats
+```
+
+**Response:** `200 OK`
+```json
+{
+  "gameTitle": "Hollow Knight",
+  "totalSubmissions": 5,
+  "overall": {
+    "average": 62.4,
+    "min": 45,
+    "max": 85
+  },
+  "byCompletionType": {
+    "main_story": {
+      "count": 3,
+      "average": 55.3,
+      "min": 45,
+      "max": 67
+    },
+    "completionist": {
+      "count": 2,
+      "average": 77.5,
+      "min": 70,
+      "max": 85
+    }
+  },
+  "byPlatform": {
+    "PC": {
+      "count": 2,
+      "average": 60.0,
+      "min": 55,
+      "max": 65
+    },
+    "Playstation 4": {
+      "count": 2,
+      "average": 61.0,
+      "min": 57,
+      "max": 65
+    },
+    "Switch": {
+      "count": 1,
+      "average": 70.0,
+      "min": 70,
+      "max": 70
+    }
+  }
+}
+```
+
+**Response Notes:**
+- Only includes completion types and platforms that have submissions
+- All averages rounded to 1 decimal place
+- Statistics calculated from all submissions for the specified game
+
+**Error Response:** `404 Not Found`
+```json
+{
+  "error": "No submissions found for this game",
+  "gameTitle": "Hollow Knight"
+}
+```
+
+**URL Encoding:**
+Game titles with spaces must be URL-decoded:
+- `Hollow%20Knight` → `Hollow Knight`  
+- `The%20Legend%20of%20Zelda` → `The Legend of Zelda`  
 
 ---

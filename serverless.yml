@@ -55,6 +55,12 @@ functions:
           path: /submissions/{id}
           method: patch
 
+  getGameStats:
+    handler: src/getGameStats.handler
+    events:
+      - httpApi:
+          path: /games/{gameTitle}/stats
+          method: get
           
 resources:
   Resources:

@@ -6,6 +6,8 @@ const docClient = DynamoDBDocumentClient.from(client);
 const { normalizeText } = require('./utils/helpers');
 
 const TABLE_NAME = process.env.VIDEO_GAME_SUBMISSIONS_TABLE;
+const PLATFORM_VALUES = Object.values(PLATFORMS).map(p => p.toLowerCase());
+const COMPLETION_TYPE_VALUES = Object.values(COMPLETION_TYPES).map(t => t.toLowerCase());
 
 async function handler(event) {
     try {
@@ -29,27 +31,24 @@ async function handler(event) {
                 body: JSON.stringify({ error: 'hoursPlayed must be greater than 0' })
             };
         }
-
-        if (!PLATFORMS.includes(platform.toLowerCase())) {
+        if (!PLATFORM_VALUES.includes(platform.toLowerCase())) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({
-                    error: `Invalid platform ${platform}, current valid platforms are ${PLATFORMS
-                        .map(p => normalizeText(p))
-                        .join(', ')}`
+                    error: `Invalid platform ${platform}, current valid platforms are ${Object.values(PLATFORMS).join(', ')}`
                 })
             };
         }
 
-        if (!COMPLETION_TYPES.includes(completionType.toLowerCase())) {
+        if (!COMPLETION_TYPE_VALUES.includes(completionType.toLowerCase())) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({
-                    error: `Invalid completion type ${completionType}, current valid platforms are ${COMPLETION_TYPES
-                        .join(', ')}`
+                    error: `Invalid completion type ${completionType}, current valid types are ${Object.values(COMPLETION_TYPES).join(', ')}`
                 })
             };
         }
+
 
         // Check if nothing to update (all fields are undefined)
         if (hoursPlayed === undefined &&

@@ -24,17 +24,11 @@ async function handler(event) {
         } = body;
 
         if (!userId || !gameTitle || !hoursPlayed || !platform || !completionType) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: 'Missing required fields, please check: userId, gameTitle, hoursPlayed, platform,  completionType' })
-            };
+            return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields, please check: userId, gameTitle, hoursPlayed, platform,  completionType, and hoursPlayed cannot be 0' }) };
         }
 
-        if (hoursPlayed <= 0) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: 'You must have played at least one hour to make a submission' })
-            };
+        if (hoursPlayed < 0) {
+            return { statusCode: 400, body: JSON.stringify({ error: 'hoursPlayed must be greater than 0' }) };
         }
 
         if (!PLATFORM_VALUES.includes(platform.toLowerCase())) {
@@ -68,7 +62,6 @@ async function handler(event) {
             updatedAt: new Date().toISOString()
         };
 
-        // Save to DynamoDB
         await docClient.send(new PutCommand({
             TableName: TABLE_NAME,
             Item: submission

@@ -21,47 +21,47 @@ async function handler(event) {
             };
         }
 
-        // Fields that can be updated, pretty much all but game title 
         const { hoursPlayed, completionType, platform, notes } = body;
 
-        // Validate hoursPlayed if provided
-        if (hoursPlayed !== undefined && hoursPlayed <= 0) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: 'hoursPlayed must be greater than 0' })
-            };
-        }
-        if (!PLATFORM_VALUES.includes(platform.toLowerCase())) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({
-                    error: `Invalid platform ${platform}, current valid platforms are ${Object.values(PLATFORMS).join(', ')}`
-                })
-            };
-        }
-
-        if (!COMPLETION_TYPE_VALUES.includes(completionType.toLowerCase())) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({
-                    error: `Invalid completion type ${completionType}, current valid types are ${Object.values(COMPLETION_TYPES).join(', ')}`
-                })
-            };
-        }
-
-
-        // Check if nothing to update (all fields are undefined)
-        if (hoursPlayed === undefined &&
+        if (
+            hoursPlayed === undefined &&
             completionType === undefined &&
             platform === undefined &&
-            notes === undefined) {
+            notes === undefined
+        ) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Nothing to update' })
             };
         }
 
-        // Build UpdateExpression based on provided fields
+        if (hoursPlayed < 0) {
+            return { statusCode: 400, body: JSON.stringify({ error: 'hoursPlayed must be greater than 0' }) };
+        }
+
+
+        if (platform !== undefined) {
+            if (!PLATFORM_VALUES.includes(platform.toLowerCase())) {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({
+                        error: `Invalid platform ${platform}, current valid platforms are ${Object.values(PLATFORMS).join(', ')}`
+                    })
+                };
+            }
+        }
+
+        if (completionType !== undefined) {
+            if (!COMPLETION_TYPE_VALUES.includes(completionType.toLowerCase())) {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({
+                        error: `Invalid completion type ${completionType}, current valid types are ${Object.values(COMPLETION_TYPES).join(', ')}`
+                    })
+                };
+            }
+        }
+
         let updateExpression = 'SET updatedAt = :updatedAt';
         const expressionAttributeValues = {
             ':updatedAt': new Date().toISOString()
@@ -72,12 +72,12 @@ async function handler(event) {
             expressionAttributeValues[':hoursPlayed'] = hoursPlayed;
         }
 
-        if (platform) {
+        if (platform !== undefined) {
             updateExpression += ', platform = :platform';
             expressionAttributeValues[':platform'] = platform;
         }
 
-        if (completionType) {
+        if (completionType !== undefined) {
             updateExpression += ', completionType = :completionType';
             expressionAttributeValues[':completionType'] = completionType.toLowerCase();
         }

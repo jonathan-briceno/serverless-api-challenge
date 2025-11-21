@@ -1,0 +1,25 @@
+{
+  "name": "gametime-api",
+  "version": "1.0.0",
+  "description": "Track, submit, and analyze video game completion times (inspired by HowLongToBeat)",
+  "scripts": {
+    "test": "jest",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove"
+  },
+  "keywords": [],
+  "author": "Jonathan Briceno",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "serverless": "^4.24.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/gametime-api"
+  }
+}

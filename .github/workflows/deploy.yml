@@ -1,16 +1,23 @@
 name: Deploy to AWS
 
 on:
-  push:
-    branches:
-      - main       
-      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
 
 jobs:
-  deploy:
+  # Always run tests before deployment
+  test:
     runs-on: ubuntu-latest
     
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,27 +25,47 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'  # Match your Lambda runtime
-          cache: 'npm'        # Cache npm packages for faster builds
+          node-version: '22'
+          cache: 'npm'
       
       - name: Install dependencies
         run: npm ci
       
       - name: Run tests
         run: npm test
+
+  # Deploy only after tests pass
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
       
-      - name: Set deployment stage
-        id: stage
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "stage=prod" >> $GITHUB_OUTPUT
-          else
-            echo "stage=dev" >> $GITHUB_OUTPUT
-          fi
+      - name: Install dependencies
+        run: npm ci
       
-      - name: Deploy to AWS
-        run: npx serverless deploy --stage ${{ steps.stage.outputs.stage }} --verbose
+      - name: Deploy to ${{ github.event.inputs.environment }}
+        run: npx serverless deploy --stage ${{ github.event.inputs.environment }} --verbose
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      
+      - name: Deployment summary
+        run: |
+          echo "Deployment Summary"
+          echo "===================="
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Region: us-east-1"
+          echo "Service: gametime-api"
+          echo "Stage: gametime-api-${{ github.event.inputs.environment }}"
+          echo "Deployment completed successfully!"

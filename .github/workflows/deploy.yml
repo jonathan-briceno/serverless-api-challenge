@@ -1,6 +1,9 @@
 name: Deploy to AWS
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       environment:
@@ -14,7 +17,7 @@ on:
           - prod
 
 jobs:
-  # Always run tests before deployment
+  # tests on push, deployments manually
   test:
     runs-on: ubuntu-latest
     
@@ -34,10 +37,11 @@ jobs:
       - name: Run tests
         run: npm test
 
-  # Deploy only after tests pass
+  # Manual Deployment
   deploy:
     needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment }}
     
     steps:

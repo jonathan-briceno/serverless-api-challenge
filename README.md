@@ -1,21 +1,24 @@
-# GameTime API (Serverless API Challenge)
+# GameTime API
 Track, submit, and analyze video game completion times (inspired by HowLongToBeat)
 
-## What is our goal? 
+## Overview
 A serverless REST API built with AWS Lambda, API Gateway, and DynamoDB that allows users to submit and track video game completion times across different platforms and play styles.
 
 ## Tech Stack
 - **Serverless Framework** - Infrastructure as Code
 - **AWS Lambda** - Serverless compute (Node.js 22.x)
-- **Amazon DynamoDB** - NoSQL database
-- **API Gateway** - REST API endpoints
+- **Amazon DynamoDB** - NoSQL database with Global Secondary Indexes
+- **API Gateway** - HTTP API endpoints
+- **GitHub Actions** - CI/CD pipeline for automated testing and deployments
+
+---
 
 ## API Endpoints
 
 ### Create Submission
 `POST /submissions`
 
-Submit a game completion time.
+Submit a new game completion time.
 
 **Request Body:**
 ```json
@@ -24,11 +27,16 @@ Submit a game completion time.
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "main_plus_extras",
-  "difficulty": "N/A",
+  "completionType": "main story",
   "notes": "Amazing game!"
 }
 ```
+
+**Valid Platforms:**
+- `Playstation 5`, `Playstation 4`, `Xbox One`, `Switch`, `Switch 2`, `PC`
+
+**Valid Completion Types:**
+- `main story`, `main + extras`, `completionist`
 
 **Response:** `201 Created`
 ```json
@@ -38,8 +46,7 @@ Submit a game completion time.
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "main_plus_extras",
-  "difficulty": "N/A",
+  "completionType": "main story",
   "notes": "Amazing game!",
   "createdAt": "2025-11-16T10:30:00.000Z",
   "updatedAt": "2025-11-16T10:30:00.000Z"
@@ -47,34 +54,41 @@ Submit a game completion time.
 ```
 
 **Error Responses:**
-- `400 Bad Request` - Invalid data - invalid hours played
+
+`400 Bad Request` - Missing required fields
+```json
+{
+  "error": "Missing required fields, please check: userId, gameTitle, hoursPlayed, platform, completionType, and hoursPlayed cannot be 0"
+}
+```
+
+`400 Bad Request` - Invalid hours played
 ```json
 {
   "error": "hoursPlayed must be greater than 0"
 }
 ```
 
-- `400 Bad Request` - Invalid data - Invalid platform 
+`400 Bad Request` - Invalid platform
 ```json
 {
-  "error": "Invalid platform Sega Saturn, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One"
+  "error": "Invalid platform Sega Saturn, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One, PC"
 }
 ```
 
-- `400 Bad Request` - Invalid data - Invalid Completion Type
+`400 Bad Request` - Invalid completion type
 ```json
 {
-  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, completionist"
+  "error": "Invalid completion type speedrun, current valid types are Main Story, Main + Extras, Completionist"
 }
 ```
 
 ---
-### Query Submissions
+
+### Query Submissions (Multiple Modes)
 `GET /submissions/{id}` - Get by submission ID  
 `GET /submissions?userId={userId}` - Get all submissions by user  
 `GET /submissions?gameTitle={gameTitle}` - Get all submissions by game title
-
-Get submissions using multiple query modes: submission id, user id and game title. 
 
 #### Get Single Submission by ID
 **Request:**
@@ -90,8 +104,7 @@ GET /submissions/abc-123-def-456
   "gameTitle": "Hollow Knight",
   "hoursPlayed": 57,
   "platform": "Playstation 4",
-  "completionType": "main_plus_extras",
-  "difficulty": "N/A",
+  "completionType": "main story",
   "notes": "Cool!",
   "createdAt": "2025-11-16T10:30:00.000Z",
   "updatedAt": "2025-11-16T10:30:00.000Z"
@@ -122,16 +135,16 @@ GET /submissions?userId=user123
       "gameTitle": "Hollow Knight",
       "hoursPlayed": 57,
       "platform": "Playstation 4",
-      "completionType": "main_plus_extras",
+      "completionType": "main story",
       "createdAt": "2025-11-16T12:00:00.000Z",
       "updatedAt": "2025-11-16T12:00:00.000Z"
     },
     {
       "submissionId": "def-456",
-      "userId": "user456",
+      "userId": "user123",
       "gameTitle": "Elden Ring",
       "hoursPlayed": 120,
-      "platform": "Playstation 5",
+      "platform": "PC",
       "completionType": "completionist",
       "createdAt": "2025-11-16T10:30:00.000Z",
       "updatedAt": "2025-11-16T10:30:00.000Z"
@@ -149,7 +162,7 @@ GET /submissions?gameTitle=Hollow Knight
 **Response:** `200 OK`
 ```json
 {
-  "count": 3,
+  "count": 2,
   "submissions": [
     {
       "submissionId": "abc-123",
@@ -157,15 +170,15 @@ GET /submissions?gameTitle=Hollow Knight
       "gameTitle": "Hollow Knight",
       "hoursPlayed": 57,
       "platform": "Playstation 4",
-      "completionType": "main_plus_extras",
+      "completionType": "main story",
       "createdAt": "2025-11-16T12:00:00.000Z"
     },
     {
       "submissionId": "ghi-789",
       "userId": "sarah",
-      "gameTitle": "Donkey Kong Bananza",
+      "gameTitle": "Hollow Knight",
       "hoursPlayed": 45,
-      "platform": "Switch 2",
+      "platform": "Switch",
       "completionType": "completionist",
       "createdAt": "2025-11-16T11:00:00.000Z"
     }
@@ -173,10 +186,79 @@ GET /submissions?gameTitle=Hollow Knight
 }
 ```
 
-**Note:** Game title search is case-insensitive. All of these work!:
+**Note:** Game title search is case-insensitive:
 - `?gameTitle=Hollow Knight`
 - `?gameTitle=hollow knight`
 - `?gameTitle=HOLLOW KNIGHT`
+
+---
+
+### Update Submission
+`PATCH /submissions/{id}`
+
+Update specific fields of an existing submission. You can update: `hoursPlayed`, `completionType`, `platform`, `notes`
+
+**Note:** Game title cannot be updated. To change the game, delete and create a new submission.
+
+**Request:**
+```bash
+PATCH /submissions/abc-123-def-456
+```
+
+**Request Body (all fields optional):**
+```json
+{
+  "hoursPlayed": 75,
+  "platform": "PC",
+  "completionType": "completionist",
+  "notes": "Side quests are nuts"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "submissionId": "abc-123-def-456",
+  "userId": "user123",
+  "gameTitle": "Hollow Knight",
+  "hoursPlayed": 75,
+  "platform": "PC",
+  "completionType": "completionist",
+  "notes": "Side quests are nuts",
+  "createdAt": "2025-11-16T10:30:00.000Z",
+  "updatedAt": "2025-11-17T14:22:00.000Z"
+}
+```
+
+**Error Responses:**
+
+`404 Not Found` - Submission doesn't exist
+```json
+{
+  "error": "Submission to update not found"
+}
+```
+
+`400 Bad Request` - Nothing to update
+```json
+{
+  "error": "Nothing to update"
+}
+```
+
+`400 Bad Request` - Invalid hours played
+```json
+{
+  "error": "hoursPlayed must be greater than 0"
+}
+```
+
+`400 Bad Request` - Invalid platform
+```json
+{
+  "error": "Invalid platform Game Boy, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One, PC"
+}
+```
 
 ---
 
@@ -198,77 +280,10 @@ DELETE /submissions/abc-123-def-456
 }
 ```
 
-**Error Responses:**
-- `404 Not Found` - Submission doesn't exist
+**Error Response:** `404 Not Found`
 ```json
 {
   "error": "Submission not found"
-}
-```
----
-
-### Update Submission
-`PUT /submissions/{id}`
-
-Update an existing submission. Fields that can be updated: `hoursPlayed`, `completionType`, `platform`, `difficulty`, `notes`
-
-**Request:**
-```bash
-PATCH /submissions/abc-123-def-456
-```
-
-**Request Body (all fields optional):**
-```json
-{
-  "hoursPlayed": 75,
-  "platform": "PC",
-  "completionType": "completionist",
-  "difficulty": "hard",
-  "notes": "Beat the final boss!"
-}
-```
-
-**Response:** `200 OK`
-```json
-{
-  "submissionId": "abc-123-def-456",
-  "userId": "user123",
-  "gameTitle": "Hollow Knight",
-  "hoursPlayed": 75,
-  "platform": "PC",
-  "completionType": "completionist",
-  "difficulty": "hard",
-  "notes": "Beat the final boss!",
-  "createdAt": "2025-11-16T10:30:00.000Z",
-  "updatedAt": "2025-11-17T14:22:00.000Z"
-}
-```
-
-**Error Responses:**
-- `404 Not Found` - Submission doesn't exist
-```json
-{
-  "error": "Submission to update not found"
-}
-```
-- `400 Bad Request` - Invalid data - invalid hours played
-```json
-{
-  "error": "hoursPlayed must be greater than 0"
-}
-```
-
-- `400 Bad Request` - Invalid data - Invalid platform 
-```json
-{
-  "error": "Invalid platform Sega Saturn, current valid platforms are Playstation 5, Playstation 4, Switch, Switch 2, Xbox One"
-}
-```
-
-- `400 Bad Request` - Invalid data - Invalid Completion Type
-```json
-{
-  "error": "Invalid completion type complete_story, current valid platforms are main_story, main_plus_extras, completionist"
 }
 ```
 
@@ -295,13 +310,13 @@ GET /games/Hollow%20Knight/stats
     "max": 85
   },
   "byCompletionType": {
-    "main_story": {
+    "Main Story": {
       "count": 3,
       "average": 55.3,
       "min": 45,
       "max": 67
     },
-    "completionist": {
+    "Completionist": {
       "count": 2,
       "average": 77.5,
       "min": 70,
@@ -320,12 +335,6 @@ GET /games/Hollow%20Knight/stats
       "average": 61.0,
       "min": 57,
       "max": 65
-    },
-    "Switch": {
-      "count": 1,
-      "average": 70.0,
-      "min": 70,
-      "max": 70
     }
   }
 }
@@ -344,9 +353,103 @@ GET /games/Hollow%20Knight/stats
 }
 ```
 
-**URL Encoding:**
-Game titles with spaces must be URL-decoded:
-- `Hollow%20Knight` → `Hollow Knight`  
-- `The%20Legend%20of%20Zelda` → `The Legend of Zelda`  
+---
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for automated testing and controlled deployments.
+
+### Workflows
+
+**Deploy to AWS**
+- Manual trigger via GitHub Actions UI
+- Deploy to any environment: dev, qa, stage, or prod
+- Tests run before deployment
+
+**Evironments:**
+- Dev: `gametime-api-dev`
+- QA: `gametime-api-qa`
+- Stage: `gametime-api-stage`
+- Prod: `gametime-api-prod`
 
 ---
+
+## Local Development
+
+### Prerequisites
+- Node.js 22.x
+- AWS CLI configured with credentials
+- Serverless Framework
+
+### Setup
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Deploy to dev
+serverless deploy --stage dev
+
+# Remove infrastructure
+serverless remove --stage dev
+```
+
+### Environment Variables
+The following environment variables are automatically set by Serverless Framework:
+- `VIDEO_GAME_SUBMISSIONS_TABLE` - DynamoDB table name
+
+---
+
+## Project Structure 
+
+Generated with `tree -a -L 3 -I 'node_modules|.git|.DS_Store|.serverless'`
+
+```
+gametime-api/
+├── .github
+│   └── workflows
+│       ├── deploy.yml
+│       └── test.yml
+├── .gitignore
+├── LICENSE
+├── README.md
+├── jest.config.js
+├── package-lock.json
+├── package.json
+├── serverless.yml
+├── src
+│   ├── constants.js
+│   ├── createSubmission.js
+│   ├── deleteSubmission.js
+│   ├── getGameStats.js
+│   ├── querySubmissions.js
+│   ├── updateSubmission.js
+│   └── utils
+│       └── helpers.js
+└── tests
+    ├── createSubmission.test.js
+    ├── deleteSubmission.test.js
+    ├── getGameStats.test.js
+    ├── querySubmission.test.js
+    └── updateSubmission.test.js
+```
+
+---
+
+## Testing
+
+Comprehensive test coverage for all endpoints:
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test file
+npm test tests/createSubmission.test.js
+```
+
+---
+
+## Built by Jonathan Briceño 

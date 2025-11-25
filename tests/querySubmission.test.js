@@ -1,7 +1,7 @@
 const { DynamoDBDocumentClient, GetCommand, QueryCommand } = require("@aws-sdk/lib-dynamodb");
 
 jest.mock("../src/utils/helpers", () => ({
-  normalizeGameTitle: jest.fn(text => text.toUpperCase())
+  normalizeText: jest.fn(text => text.toUpperCase())
 }));
 
 jest.mock("@aws-sdk/client-dynamodb", () => ({
@@ -25,6 +25,7 @@ jest.mock("@aws-sdk/lib-dynamodb", () => {
 });
 
 const { handler } = require("../src/querySubmissions");
+const { normalizeText } = require("../src/utils/helpers");
 
 describe("querySubmissions", () => {
   beforeEach(() => {

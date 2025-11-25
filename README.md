@@ -410,14 +410,16 @@ Generated with `tree -a -L 3 -I 'node_modules|.git|.DS_Store|.serverless'`
 gametime-api/
 ├── .github
 │   └── workflows
-│       ├── deploy.yml
-│       └── test.yml
+│       └── deploy.yml
 ├── .gitignore
 ├── LICENSE
 ├── README.md
 ├── jest.config.js
 ├── package-lock.json
 ├── package.json
+├── scripts
+│   ├── data.json
+│   └── dynamo-backfill.py
 ├── serverless.yml
 ├── src
 │   ├── constants.js

@@ -1,6 +1,6 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
-const { normalizeGameTitle } = require ('./utils/helpers');
+const { normalizeText } = require ('./utils/helpers');
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -60,7 +60,7 @@ async function getByGameTitle(gameTitle) {
         IndexName: 'GameIndex',
         KeyConditionExpression: 'gameTitle = :gameTitle',
         ExpressionAttributeValues: {
-            ':gameTitle': normalizeGameTitle(gameTitle)
+            ':gameTitle': normalizeText(gameTitle)
         },
         ScanIndexForward: false
     }));

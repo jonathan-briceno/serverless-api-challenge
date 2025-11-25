@@ -1,0 +1,162 @@
+[
+  {
+    "userId": "user001",
+    "gameTitle": "Hollow Knight",
+    "hoursPlayed": 42,
+    "platform": "Switch",
+    "completionType": "Main Story",
+    "notes": "Incredible metroidvania."
+  },
+  {
+    "userId": "user002",
+    "gameTitle": "Hollow Knight",
+    "hoursPlayed": 68,
+    "platform": "PC",
+    "completionType": "Main + Extras",
+    "notes": "Got most charms."
+  },
+  {
+    "userId": "user003",
+    "gameTitle": "Hollow Knight",
+    "hoursPlayed": 95,
+    "platform": "Playstation 5",
+    "completionType": "Completionist",
+    "notes": "All pantheons cleared."
+  },
+  {
+    "userId": "user004",
+    "gameTitle": "Expedition 33",
+    "hoursPlayed": 27,
+    "platform": "Xbox One",
+    "completionType": "Main Story",
+    "notes": "Great visuals."
+  },
+  {
+    "userId": "user005",
+    "gameTitle": "Expedition 33",
+    "hoursPlayed": 41,
+    "platform": "Playstation 4",
+    "completionType": "Main + Extras",
+    "notes": "Loved the story pacing."
+  },
+  {
+    "userId": "user006",
+    "gameTitle": "Expedition 33",
+    "hoursPlayed": 58,
+    "platform": "Switch 2",
+    "completionType": "Completionist",
+    "notes": "Got every collectible."
+  },
+  {
+    "userId": "user007",
+    "gameTitle": "The Legend of Zelda: Ocarina of Time",
+    "hoursPlayed": 32,
+    "platform": "Switch",
+    "completionType": "Main Story",
+    "notes": "First Zelda ever played."
+  },
+  {
+    "userId": "user008",
+    "gameTitle": "The Legend of Zelda: Ocarina of Time",
+    "hoursPlayed": 51,
+    "platform": "Switch 2",
+    "completionType": "Main + Extras",
+    "notes": "Almost all Gold Skulltulas."
+  },
+  {
+    "userId": "user009",
+    "gameTitle": "The Legend of Zelda: Ocarina of Time",
+    "hoursPlayed": 72,
+    "platform": "PC",
+    "completionType": "Completionist",
+    "notes": "Master Quest too!"
+  },
+  {
+    "userId": "user010",
+    "gameTitle": "Dark Souls",
+    "hoursPlayed": 48,
+    "platform": "Playstation 5",
+    "completionType": "Main Story",
+    "notes": "Ornstein and Smough were hell."
+  },
+  {
+    "userId": "user011",
+    "gameTitle": "Dark Souls",
+    "hoursPlayed": 70,
+    "platform": "Xbox One",
+    "completionType": "Main + Extras",
+    "notes": "Did DLC too."
+  },
+  {
+    "userId": "user012",
+    "gameTitle": "Dark Souls",
+    "hoursPlayed": 103,
+    "platform": "PC",
+    "completionType": "Completionist",
+    "notes": "All endings achieved."
+  },
+  {
+    "userId": "user013",
+    "gameTitle": "Hollow Knight",
+    "hoursPlayed": 30,
+    "platform": "Playstation 4",
+    "completionType": "Main Story",
+    "notes": "Struggled with Hornet."
+  },
+  {
+    "userId": "user014",
+    "gameTitle": "Expedition 33",
+    "hoursPlayed": 33,
+    "platform": "Playstation 5",
+    "completionType": "Main + Extras",
+    "notes": "Side quests were fun."
+  },
+  {
+    "userId": "user015",
+    "gameTitle": "The Legend of Zelda: Ocarina of Time",
+    "hoursPlayed": 28,
+    "platform": "Switch",
+    "completionType": "Main Story",
+    "notes": "Nostalgic classic."
+  },
+  {
+    "userId": "user016",
+    "gameTitle": "Dark Souls",
+    "hoursPlayed": 56,
+    "platform": "Switch",
+    "completionType": "Main + Extras",
+    "notes": "Portable pain."
+  },
+  {
+    "userId": "user017",
+    "gameTitle": "Hollow Knight",
+    "hoursPlayed": 80,
+    "platform": "Xbox One",
+    "completionType": "Completionist",
+    "notes": "Radiance defeated."
+  },
+  {
+    "userId": "user018",
+    "gameTitle": "Expedition 33",
+    "hoursPlayed": 22,
+    "platform": "PC",
+    "completionType": "Main Story",
+    "notes": "Short but fun."
+  },
+  {
+    "userId": "user019",
+    "gameTitle": "The Legend of Zelda: Ocarina of Time",
+    "hoursPlayed": 60,
+    "platform": "Playstation 5",
+    "completionType": "Main + Extras",
+    "notes": "Adult Link section is peak gaming."
+  },
+  {
+    "userId": "user020",
+    "gameTitle": "Dark Souls",
+    "hoursPlayed": 110,
+    "platform": "Switch 2",
+    "completionType": "Completionist",
+    "notes": "100% all covenants."
+  }
+]
